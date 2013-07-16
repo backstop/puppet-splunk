@@ -34,14 +34,14 @@ class splunk::linux_forwarder {
   }
 
   exec {'set_forwarder_port':
-    unless  => "/bin/grep \"server \= \[?${splunk::params::logging_server}\]?:${splunk::params::logging_port}\" /opt/splunkforwarder/etc/system/local/outputs.conf",
+    unless  => "/bin/grep -P \"server \= \[?${splunk::params::logging_server}\]?:${splunk::params::logging_port}\" /opt/splunkforwarder/etc/system/local/outputs.conf",
     command => "/opt/splunkforwarder/bin/splunk add forward-server ${splunk::params::logging_server}:${splunk::params::logging_port} -auth ${splunk::params::splunk_admin}:${splunk::params::splunk_admin_pass}",
     require => Exec['set_monitor_default'],
     notify  => Service['splunk'],
   }
 
   exec {'set_monitor_default':
-    unless  => '/bin/grep \"\/var\/log\" /opt/splunkforwarder/etc/apps/search/local/inputs.conf',
+    unless  => '/bin/grep \/var\/log /opt/splunkforwarder/etc/apps/search/local/inputs.conf',
     command => "/opt/splunkforwarder/bin/splunk add monitor \"/var/log/\" -auth ${splunk::params::splunk_admin}:${splunk::params::splunk_admin_pass}",
     require => Exec['start_splunk','set_boot'],
   }
@@ -54,6 +54,7 @@ class splunk::linux_forwarder {
 
   file {'/etc/init.d/splunk':
     ensure  => file,
+    mode    => '0755',
     require => Exec['set_boot']
   }
 
