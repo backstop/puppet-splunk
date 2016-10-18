@@ -29,7 +29,7 @@ class splunk::linux_forwarder {
 
   exec {'start_splunk':
     creates => '/opt/splunkforwarder/etc/licenses',
-    command => '/opt/splunkforwarder/bin/splunk start --accept-license',
+    command => '/opt/splunkforwarder/bin/splunk start --accept-license --no-prompt --answer-yes',
     timeout => 0,
   }
 
